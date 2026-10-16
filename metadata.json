@@ -1,0 +1,6 @@
+{
+  "name": "GABSI Batu - Laporan Keuangan",
+  "description": "Aplikasi modern manajemen dan laporan keuangan GABSI Kota Batu dengan sinkronisasi Google Sheets / GAS, role-based access control, dan offline-first caching.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
