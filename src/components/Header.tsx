@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   RefreshCw,
   Sun,
@@ -9,6 +9,7 @@ import {
   Shield,
   Layers,
   Sparkles,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { UserRolePermission, UserAccount, ViewTab } from '../types';
 
@@ -66,6 +67,22 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const roleRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowUserMenu(false);
+      }
+      if (roleRef.current && !roleRef.current.contains(e.target as Node)) {
+        setShowRoleMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const tabInfo = TAB_TITLES[currentTab] || { title: 'GABSI Batu', subtitle: '' };
 
@@ -75,13 +92,13 @@ export const Header: React.FC<HeaderProps> = ({
     currentRole?.permissions.canManageRoles;
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-2.5 transition-colors">
-      <div className="flex items-center justify-between gap-3">
-        {/* Left: Mobile hamburger & Tab Title */}
-        <div className="flex items-center gap-3 min-w-0">
+    <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2.5 transition-colors">
+      <div className="flex items-center justify-between gap-2.5 sm:gap-4">
+        {/* Left: Mobile hamburger & Tab Title (gives full priority to title space on mobile) */}
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
           <button
             onClick={onOpenMobileMenu}
-            className="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="md:hidden p-2 -ml-1 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             title="Menu Navigasi"
           >
             <div className="w-5 h-4 flex flex-col justify-between">
@@ -91,9 +108,9 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </button>
 
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate leading-tight flex items-center gap-2">
-              <span>{tabInfo.title}</span>
+              <span className="truncate">{tabInfo.title}</span>
               {currentRole && (
                 <span className="hidden lg:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
                   {currentRole.name}
@@ -106,25 +123,28 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Right Controls */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-          {/* RBAC Role Selector Dropdown in Header */}
-          <div className="relative">
+        {/* Right Controls: Compact on Mobile, Full on Desktop */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
+          {/* 1. Desktop-Only Dedicated RBAC Role Selector Dropdown */}
+          <div className="relative hidden sm:block" ref={roleRef}>
             <button
-              onClick={() => setShowRoleMenu(!showRoleMenu)}
+              onClick={() => {
+                setShowRoleMenu(!showRoleMenu);
+                setShowUserMenu(false);
+              }}
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
               title="Ganti Peran Aktif (RBAC Selector)"
             >
               <Shield size={14} className="text-emerald-600 dark:text-emerald-400" />
-              <span className="hidden sm:inline max-w-[110px] truncate">
+              <span className="max-w-[120px] truncate">
                 {currentRole?.name || 'Pilih Peran'}
               </span>
               <ChevronDown size={13} className="text-slate-400" />
             </button>
 
             {showRoleMenu && (
-              <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 z-50 text-xs">
-                <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+              <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 z-50 text-xs">
+                <div className="px-3.5 py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
                   <span>Role-Based Access</span>
                   {canSwitchRole && (
                     <button
@@ -132,47 +152,50 @@ export const Header: React.FC<HeaderProps> = ({
                         setShowRoleMenu(false);
                         onOpenRoleSettings();
                       }}
-                      className="text-emerald-600 hover:underline capitalize font-medium text-[10px]"
+                      className="text-emerald-600 hover:underline capitalize font-semibold text-[10.5px]"
                     >
                       Kelola Peran
                     </button>
                   )}
                 </div>
-                {roles.map((r) => {
-                  const isCurrent = r.id === currentRole?.id;
-                  return (
-                    <button
-                      key={r.id}
-                      onClick={() => {
-                        onSelectRole(r.id);
-                        setShowRoleMenu(false);
-                      }}
-                      className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/60 transition ${
-                        isCurrent
-                          ? 'font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20'
-                          : 'text-slate-700 dark:text-slate-200'
-                      }`}
-                    >
-                      <div className="truncate">
-                        <div className="truncate">{r.name}</div>
-                        <div className="text-[10px] text-slate-400 font-normal truncate">
-                          {r.description}
+
+                <div className="max-h-72 overflow-y-auto py-1">
+                  {roles.map((r) => {
+                    const isCurrent = r.id === currentRole?.id;
+                    return (
+                      <button
+                        key={r.id}
+                        onClick={() => {
+                          onSelectRole(r.id);
+                          setShowRoleMenu(false);
+                        }}
+                        className={`w-full text-left px-3.5 py-2 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/60 transition ${
+                          isCurrent
+                            ? 'font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20'
+                            : 'text-slate-700 dark:text-slate-200'
+                        }`}
+                      >
+                        <div className="truncate pr-2">
+                          <div className="truncate font-semibold">{r.name}</div>
+                          <div className="text-[10.5px] text-slate-400 font-normal truncate">
+                            {r.description}
+                          </div>
                         </div>
-                      </div>
-                      {isCurrent && <span className="text-emerald-600 font-bold ml-1">✓</span>}
-                    </button>
-                  );
-                })}
+                        {isCurrent && <span className="text-emerald-600 font-bold ml-1">✓</span>}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
 
-          {/* Sync Status Badge with Pulsing Live Indicator */}
+          {/* 2. Sync Status Badge (Text on Desktop, Compact on Mobile) */}
           <button
             onClick={onManualSync}
             disabled={syncStatus === 'syncing'}
             title={`Status: ${syncStatus}. Terakhir sync: ${lastSyncTime || 'Belum pernah'}. Klik untuk sinkronisasi manual.`}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium transition ${
+            className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-xl border text-xs font-medium transition ${
               syncStatus === 'synced'
                 ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300'
                 : syncStatus === 'syncing'
@@ -202,7 +225,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden md:inline">
               {syncStatus === 'synced' && 'Tersinkron'}
               {syncStatus === 'syncing' && 'Menyinkronkan...'}
-              {syncStatus === 'offline' && 'Offline (Lokal)'}
+              {syncStatus === 'offline' && 'Offline'}
               {syncStatus === 'error' && 'Sync Gagal'}
             </span>
 
@@ -212,10 +235,10 @@ export const Header: React.FC<HeaderProps> = ({
             />
           </button>
 
-          {/* Theme Mode Toggle */}
+          {/* 3. Desktop-Only Theme Mode Toggle */}
           <button
             onClick={onToggleTheme}
-            className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition"
+            className="hidden sm:flex p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition"
             title={themeMode === 'dark' ? 'Ganti ke Mode Terang' : 'Ganti ke Mode Gelap'}
           >
             {themeMode === 'dark' ? (
@@ -225,39 +248,128 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </button>
 
-          {/* User Profile & Menu */}
-          <div className="relative">
+          {/* 4. Unified Profile & Quick Settings Dropdown (Contains Role Switcher & Toggles on Mobile!) */}
+          <div className="relative" ref={menuRef}>
             <button
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition"
+              onClick={() => {
+                setShowUserMenu(!showUserMenu);
+                setShowRoleMenu(false);
+              }}
+              className="flex items-center gap-1.5 p-1 sm:p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition"
+              title="Menu Profil & Pengaturan Cepat"
             >
-              <div className="w-7 h-7 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+              <div className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
                 {currentUser?.name?.charAt(0) || 'U'}
               </div>
               <ChevronDown size={14} className="text-slate-400" />
             </button>
 
+            {/* Mobile backdrop overlay */}
             {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 text-xs">
-                <div className="px-3.5 py-2 border-b border-slate-100 dark:border-slate-700">
-                  <div className="font-bold text-slate-900 dark:text-white truncate">
+              <div
+                className="fixed inset-0 z-40 bg-black/25 backdrop-blur-xs sm:hidden"
+                onClick={() => setShowUserMenu(false)}
+              />
+            )}
+
+            {/* Dropdown Menu - Perfectly anchored right-0 within screen bounds without overflow */}
+            {showUserMenu && (
+              <div className="absolute right-0 mt-2 w-[calc(100vw-24px)] max-w-[320px] sm:w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 py-2 z-50 text-xs overflow-hidden">
+                {/* User Profile Card */}
+                <div className="px-4 py-2.5 border-b border-slate-100 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/40">
+                  <div className="font-bold text-slate-900 dark:text-white text-sm truncate">
                     {currentUser?.name}
                   </div>
                   <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                     {currentUser?.email}
                   </div>
-                  <div className="mt-1.5 flex items-center gap-1.5">
-                    <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
+                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
                       {currentRole?.name}
                     </span>
                     {currentUser?.isDefaultPin && (
-                      <span className="inline-block px-1.5 py-0.5 rounded text-[9px] bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-medium">
+                      <span className="inline-block px-1.5 py-0.5 rounded text-[9.5px] bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-semibold">
                         PIN Standar
                       </span>
                     )}
                   </div>
                 </div>
 
+                {/* Mobile Unified Role Switcher (Integrated cleanly inside this single dropdown!) */}
+                <div className="sm:hidden px-3.5 py-2.5 border-b border-slate-100 dark:border-slate-700/80">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <Shield size={12} className="text-emerald-500" />
+                      <span>Ganti Peran (RBAC)</span>
+                    </span>
+                    {canSwitchRole && (
+                      <button
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          onOpenRoleSettings();
+                        }}
+                        className="text-emerald-600 dark:text-emerald-400 hover:underline text-[10.5px] font-semibold"
+                      >
+                        Kelola
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="space-y-1 max-h-40 overflow-y-auto pr-1">
+                    {roles.map((r) => {
+                      const isCurrent = r.id === currentRole?.id;
+                      return (
+                        <button
+                          key={r.id}
+                          onClick={() => {
+                            onSelectRole(r.id);
+                            setShowUserMenu(false);
+                          }}
+                          className={`w-full text-left px-2.5 py-1.5 rounded-xl flex items-center justify-between transition ${
+                            isCurrent
+                              ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800/60'
+                              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'
+                          }`}
+                        >
+                          <span className="truncate text-xs">{r.name}</span>
+                          {isCurrent && <span className="text-emerald-600 font-bold">✓</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Mobile Unified Toggles: Theme Mode & Sync Status */}
+                <div className="sm:hidden px-3.5 py-2.5 border-b border-slate-100 dark:border-slate-700/80 space-y-2">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <SlidersHorizontal size={12} className="text-emerald-500" />
+                    <span>Opsi Tampilan & Sinkronisasi</span>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-slate-600 dark:text-slate-300 text-xs font-medium">
+                      Mode Tampilan
+                    </span>
+                    <button
+                      onClick={onToggleTheme}
+                      className="px-2.5 py-1 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-700/80 text-slate-800 dark:text-slate-200 flex items-center gap-1.5 transition active:scale-95"
+                    >
+                      {themeMode === 'dark' ? (
+                        <>
+                          <Sun size={13} className="text-amber-400" />
+                          <span>Terang</span>
+                        </>
+                      ) : (
+                        <>
+                          <Moon size={13} className="text-slate-600" />
+                          <span>Gelap</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Actions & Security */}
                 <div className="py-1">
                   <button
                     onClick={() => {
@@ -303,7 +415,7 @@ export const Header: React.FC<HeaderProps> = ({
                       setShowUserMenu(false);
                       onLogout();
                     }}
-                    className="w-full text-left px-3.5 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2.5 transition"
+                    className="w-full text-left px-3.5 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2.5 transition font-semibold"
                   >
                     <LogOut size={15} />
                     <span>Keluar (Logout)</span>
