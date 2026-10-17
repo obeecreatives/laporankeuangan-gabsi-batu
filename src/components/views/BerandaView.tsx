@@ -13,7 +13,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import { AppState, UserRolePermission, ViewTab } from '../../types';
-import { formatRupiah, formatDateId } from '../../utils/formatters';
+import { formatRupiah, formatNumber, formatDateId } from '../../utils/formatters';
 
 interface BerandaViewProps {
   state: AppState;
@@ -113,7 +113,7 @@ export const BerandaView: React.FC<BerandaViewProps> = ({
             {formatRupiah(totalBalance)}
           </div>
           <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
-            <span>{state.accounts.length} Akun Kas &amp; Bank Aktif</span>
+            <span>{formatNumber(state.accounts.length)} Akun Kas &amp; Bank Aktif</span>
           </div>
         </div>
 
@@ -196,7 +196,7 @@ export const BerandaView: React.FC<BerandaViewProps> = ({
             <div className="space-y-2">
               <div className="flex items-end justify-between">
                 <span className="text-2xl font-black font-mono text-slate-900 dark:text-white">
-                  {paidMembersCount} / {activeMembers.length}
+                  {formatNumber(paidMembersCount)} / {formatNumber(activeMembers.length)}
                 </span>
                 <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
                   {activeMembers.length
@@ -221,7 +221,7 @@ export const BerandaView: React.FC<BerandaViewProps> = ({
               </div>
 
               <p className="text-[11px] text-slate-500 dark:text-slate-400 pt-1">
-                {activeMembers.length - paidMembersCount} anggota belum menyelesaikan iuran bulan ini.
+                {formatNumber(activeMembers.length - paidMembersCount)} anggota belum menyelesaikan iuran bulan ini.
               </p>
             </div>
           </div>

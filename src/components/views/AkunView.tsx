@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Wallet, Plus, Trash2, AlertTriangle, Sparkles, Building2, Landmark, Smartphone } from 'lucide-react';
 import { AppState, Account, AccountType, UserRolePermission } from '../../types';
-import { formatRupiah, generateUid } from '../../utils/formatters';
+import { formatRupiah, formatNumber, generateUid } from '../../utils/formatters';
+import { CurrencyAmountInput } from '../CurrencyAmountInput';
 
 interface AkunViewProps {
   state: AppState;
@@ -135,19 +136,15 @@ export const AkunView: React.FC<AkunViewProps> = ({
               </select>
             </div>
 
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Saldo Awal (Rp)
-              </label>
-              <input
-                type="number"
-                min="0"
+            <div className="sm:col-span-4">
+              <CurrencyAmountInput
+                label="Saldo Awal (Rp)"
                 value={initialBalance}
-                onChange={(e) =>
-                  setInitialBalance(e.target.value === '' ? '' : Number(e.target.value))
-                }
+                onChange={setInitialBalance}
+                showTerbilang={true}
+                showCornerAmount={true}
+                showQuickChips={false}
                 placeholder="0"
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
 

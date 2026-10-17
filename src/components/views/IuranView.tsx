@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Sparkles, CheckCircle2, Clock, Calendar, User, Wallet, ArrowRight, AlertCircle } from 'lucide-react';
 import { AppState, UserRolePermission, Transaction } from '../../types';
-import { formatRupiah, formatDateId, MONTH_NAMES_ID, generateUid } from '../../utils/formatters';
+import { formatRupiah, formatNumber, formatDateId, MONTH_NAMES_ID, generateUid } from '../../utils/formatters';
+import { CurrencyAmountInput } from '../CurrencyAmountInput';
 
 interface IuranViewProps {
   state: AppState;
@@ -162,17 +163,16 @@ export const IuranView: React.FC<IuranViewProps> = ({
                 </select>
               </div>
 
-              <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Nominal Pembayaran (Rp)
-                </label>
-                <input
-                  type="number"
-                  min="1"
+              <div className="sm:col-span-2 lg:col-span-1">
+                <CurrencyAmountInput
+                  label="Nominal Pembayaran (Rp)"
                   value={amount}
-                  onChange={(e) => setAmount(Number(e.target.value))}
+                  onChange={setAmount}
                   required
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  showTerbilang={true}
+                  showCornerAmount={true}
+                  showQuickChips={false}
+                  placeholder="0"
                 />
               </div>
 

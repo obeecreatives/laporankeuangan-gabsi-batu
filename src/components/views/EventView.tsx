@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CalendarDays, Plus, Trash2, MapPin, Calendar, TrendingUp, TrendingDown, Scale } from 'lucide-react';
 import { AppState, AppEvent, UserRolePermission } from '../../types';
-import { formatRupiah, formatDateId, generateUid } from '../../utils/formatters';
+import { formatRupiah, formatNumber, formatDateId, generateUid } from '../../utils/formatters';
 
 interface EventViewProps {
   state: AppState;
@@ -111,7 +111,7 @@ export const EventView: React.FC<EventViewProps> = ({
       {/* Daftar Event Cards with Income, Expense & Net Stats */}
       <div className="space-y-4">
         <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-          Daftar Turnamen &amp; Realisasi Anggaran ({state.events.length})
+          Daftar Turnamen &amp; Realisasi Anggaran ({formatNumber(state.events.length)})
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -18,9 +18,63 @@ export const MONTH_NAMES_ID = [
   'Desember',
 ];
 
-export function formatRupiah(amount: number): string {
-  const n = Math.round(Number(amount) || 0);
-  return 'Rp ' + n.toLocaleString('id-ID', { maximumFractionDigits: 0 });
+export function formatNumber(num: number | string | null | undefined): string {
+  if (num === null || num === undefined || num === '') return '0';
+  const val = Number(num);
+  if (isNaN(val)) return '0';
+  const isNegative = val < 0;
+  const n = Math.round(Math.abs(val));
+  const formatted = n.toLocaleString('id-ID', { maximumFractionDigits: 0 });
+  return isNegative ? `-${formatted}` : formatted;
+}
+
+export function formatRupiah(amount: number | string | null | undefined): string {
+  if (amount === null || amount === undefined || amount === '') return 'Rp 0';
+  const num = Number(amount);
+  if (isNaN(num)) return 'Rp 0';
+  const isNegative = num < 0;
+  const n = Math.round(Math.abs(num));
+  const formatted = n.toLocaleString('id-ID', { maximumFractionDigits: 0 });
+  return isNegative ? `-Rp ${formatted}` : `Rp ${formatted}`;
+}
+
+export function formatThousands(value: string | number | null | undefined): string {
+  if (value === '' || value === null || value === undefined) return '';
+  const digits = String(value).replace(/\D/g, '');
+  if (!digits) return '';
+  const clean = digits.replace(/^0+/, '') || '0';
+  return Number(clean).toLocaleString('id-ID');
+}
+
+export function parseThousands(value: string | number | null | undefined): number | '' {
+  if (value === '' || value === null || value === undefined) return '';
+  const digits = String(value).replace(/\D/g, '');
+  if (!digits) return '';
+  const num = parseInt(digits, 10);
+  return isNaN(num) ? '' : num;
+}
+
+export function terbilang(n: number): string {
+  n = Math.floor(Math.abs(Number(n) || 0));
+  if (n === 0) return 'Nol';
+  const units = ['', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan', 'Sepuluh', 'Sebelas'];
+  if (n < 12) return units[n];
+  if (n < 20) return terbilang(n - 10) + ' Belas';
+  if (n < 100) return terbilang(Math.floor(n / 10)) + ' Puluh' + (n % 10 !== 0 ? ' ' + terbilang(n % 10) : '');
+  if (n < 200) return 'Seratus' + (n - 100 !== 0 ? ' ' + terbilang(n - 100) : '');
+  if (n < 1000) return terbilang(Math.floor(n / 100)) + ' Ratus' + (n % 100 !== 0 ? ' ' + terbilang(n % 100) : '');
+  if (n < 2000) return 'Seribu' + (n - 1000 !== 0 ? ' ' + terbilang(n - 1000) : '');
+  if (n < 1000000) return terbilang(Math.floor(n / 1000)) + ' Ribu' + (n % 1000 !== 0 ? ' ' + terbilang(n % 1000) : '');
+  if (n < 1000000000) return terbilang(Math.floor(n / 1000000)) + ' Juta' + (n % 1000000 !== 0 ? ' ' + terbilang(n % 1000000) : '');
+  if (n < 1000000000000) return terbilang(Math.floor(n / 1000000000)) + ' Miliar' + (n % 1000000000 !== 0 ? ' ' + terbilang(n % 1000000000) : '');
+  return terbilang(Math.floor(n / 1000000000000)) + ' Triliun' + (n % 1000000000000 !== 0 ? ' ' + terbilang(n % 1000000000000) : '');
+}
+
+export function terbilangRupiah(amount: number | string | null | undefined): string {
+  if (amount === null || amount === undefined || amount === '') return 'Nol Rupiah';
+  const n = Math.floor(Math.abs(Number(amount) || 0));
+  if (n === 0) return 'Nol Rupiah';
+  return `${terbilang(n)} Rupiah`;
 }
 
 export function formatDateId(dateStr: string): string {

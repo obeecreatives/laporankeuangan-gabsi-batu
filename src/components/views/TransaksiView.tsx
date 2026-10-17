@@ -15,7 +15,8 @@ import {
   FileSpreadsheet,
 } from 'lucide-react';
 import { AppState, Transaction, TransactionType, UserRolePermission, TransactionHistory } from '../../types';
-import { formatRupiah, formatDateId, MONTH_NAMES_ID, generateUid, exportToCsvFile } from '../../utils/formatters';
+import { formatRupiah, formatNumber, formatDateId, MONTH_NAMES_ID, generateUid, exportToCsvFile } from '../../utils/formatters';
+import { CurrencyAmountInput } from '../CurrencyAmountInput';
 
 interface TransaksiViewProps {
   state: AppState;
@@ -369,37 +370,32 @@ export const TransaksiView: React.FC<TransaksiViewProps> = ({
               </div>
             )}
 
-            {/* Third Row: Deskripsi & Nominal */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="sm:col-span-2">
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Deskripsi / Catatan Transaksi
-                </label>
-                <input
-                  type="text"
-                  value={desc}
-                  onChange={(e) => setDesc(e.target.value)}
-                  placeholder="Contoh: Sewa GOR latihan minggu 2, Konsumsi rapat KONI..."
-                  required
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Nominal (Rp)
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value === '' ? '' : Number(e.target.value))}
-                  placeholder="0"
-                  required
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                />
-              </div>
+            {/* Third Row: Deskripsi */}
+            <div>
+              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Deskripsi / Catatan Transaksi
+              </label>
+              <input
+                type="text"
+                value={desc}
+                onChange={(e) => setDesc(e.target.value)}
+                placeholder="Contoh: Sewa GOR latihan minggu 2, Konsumsi rapat KONI..."
+                required
+                className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              />
             </div>
+
+            {/* Fourth Row: Nominal Input dengan Separasi Otomatis & Terbilang */}
+            <CurrencyAmountInput
+              label="Nominal Transaksi (Rp)"
+              value={amount}
+              onChange={setAmount}
+              required
+              showTerbilang={true}
+              showCornerAmount={true}
+              showQuickChips={true}
+              placeholder="0"
+            />
 
             <div className="pt-2 flex justify-end gap-2">
               {editingId && (
@@ -627,9 +623,9 @@ export const TransaksiView: React.FC<TransaksiViewProps> = ({
         {totalPages > 1 && (
           <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500">
             <div>
-              Menampilkan {(currentPage - 1) * pageSize + 1} -{' '}
-              {Math.min(currentPage * pageSize, filteredTransactions.length)} dari{' '}
-              {filteredTransactions.length} transaksi
+              Menampilkan {formatNumber((currentPage - 1) * pageSize + 1)} -{' '}
+              {formatNumber(Math.min(currentPage * pageSize, filteredTransactions.length))} dari{' '}
+              {formatNumber(filteredTransactions.length)} transaksi
             </div>
             <div className="flex items-center gap-1">
               <button

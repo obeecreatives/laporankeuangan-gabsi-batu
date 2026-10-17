@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Users, Plus, Trash2, Search, Phone, CheckCircle2, XCircle } from 'lucide-react';
 import { AppState, Member, MemberStatus, UserRolePermission } from '../../types';
-import { formatRupiah, generateUid } from '../../utils/formatters';
+import { formatRupiah, formatNumber, generateUid } from '../../utils/formatters';
+import { CurrencyAmountInput } from '../CurrencyAmountInput';
 
 interface AnggotaViewProps {
   state: AppState;
@@ -94,20 +95,16 @@ export const AnggotaView: React.FC<AnggotaViewProps> = ({
               />
             </div>
 
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Tarif Iuran Bulanan (Rp)
-              </label>
-              <input
-                type="number"
-                min="0"
+            <div className="sm:col-span-2">
+              <CurrencyAmountInput
+                label="Tarif Iuran Bulanan (Rp)"
                 value={monthlyDues}
-                onChange={(e) =>
-                  setMonthlyDues(e.target.value === '' ? '' : Number(e.target.value))
-                }
-                placeholder="0"
+                onChange={setMonthlyDues}
                 required
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                showTerbilang={true}
+                showCornerAmount={true}
+                showQuickChips={false}
+                placeholder="0"
               />
             </div>
 
@@ -129,7 +126,7 @@ export const AnggotaView: React.FC<AnggotaViewProps> = ({
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
           <div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-              Direktori Anggota ({filteredMembers.length} Orang)
+              Direktori Anggota ({formatNumber(filteredMembers.length)} Orang)
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               Daftar seluruh pengurus, atlet, dan anggota Bridge Kota Batu.
