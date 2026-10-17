@@ -223,7 +223,11 @@ export default function App() {
   // Manual 2-Way Sync Trigger (Pull latest from Sheets + Push local to Sheets)
   const handleManualSync = async () => {
     if (!gasUrl.trim()) {
-      setIsGasCenterOpen(true);
+      if (currentRole?.id === 'developer') {
+        setIsGasCenterOpen(true);
+      } else {
+        alert('Endpoint Google Sheets belum disetel. Hubungi Developer / Administrator.');
+      }
       return;
     }
     setSyncStatus('syncing');
@@ -790,7 +794,7 @@ export default function App() {
 
       {/* 5. Modals & Dialogs */}
       <GasCenterModal
-        isOpen={isGasCenterOpen}
+        isOpen={isGasCenterOpen && currentRole?.id === 'developer'}
         onClose={() => setIsGasCenterOpen(false)}
         gasUrl={gasUrl}
         onSaveGasUrl={(url) => {
