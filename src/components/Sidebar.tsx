@@ -208,7 +208,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 key={item.id}
                 onClick={() => onSelectTab(item.id)}
                 title={isCollapsed ? item.label : undefined}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all group relative ${
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition-all group relative ${
                   isActive
                     ? 'bg-emerald-600 text-white font-semibold shadow-md shadow-emerald-950/30'
                     : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
@@ -226,7 +226,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                 {!isCollapsed && item.num && (
                   <span
-                    className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full flex-shrink-0 ${
+                    className={`text-[11px] font-mono px-1.5 py-0.5 rounded-full flex-shrink-0 ${
                       isActive
                         ? 'bg-emerald-700/80 text-white'
                         : 'bg-slate-800 text-slate-400 group-hover:text-slate-200'
@@ -254,7 +254,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             onClick={onOpenGasCenter}
             title="Headless GAS Center & Endpoint Setup"
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-amber-400 hover:bg-amber-950/30 transition group relative"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-amber-400 hover:bg-amber-950/30 transition group relative"
           >
             <Server size={17} className="flex-shrink-0" />
             {!isCollapsed && <span className="truncate">Headless GAS Center</span>}
@@ -270,7 +270,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           onClick={onOpenInstall}
           title="Install Web App ke PC / HP"
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-sky-400 hover:bg-sky-950/30 transition group relative"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-sky-400 hover:bg-sky-950/30 transition group relative"
         >
           <DownloadCloud size={17} className="flex-shrink-0" />
           {!isCollapsed && <span className="truncate">Install Web App</span>}
@@ -285,7 +285,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           onClick={onToggleFullscreen}
           title={isFullscreen ? 'Keluar Fullscreen' : 'Mode Layar Penuh (Fullscreen)'}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group relative"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group relative"
         >
           {isFullscreen ? <Minimize2 size={17} className="flex-shrink-0" /> : <Maximize2 size={17} className="flex-shrink-0" />}
           {!isCollapsed && <span>{isFullscreen ? 'Keluar Layar Penuh' : 'Layar Penuh'}</span>}
@@ -295,7 +295,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           onClick={onOpenHelp}
           title="Panduan & Kontak Developer"
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition group relative"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition group relative"
         >
           <HelpCircle size={17} className="flex-shrink-0" />
           {!isCollapsed && <span>Bantuan & Dokumen</span>}
