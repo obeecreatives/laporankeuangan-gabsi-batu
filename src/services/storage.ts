@@ -1,7 +1,10 @@
 import { AppState, UserRolePermission, UserAccount } from '../types';
 
-export const SPREADSHEET_ID_DEFAULT = '1tyYyUpBnbv7OtHuEbG7qf4pn0mCnjzDG-sSgZ99H8F4';
+export const SPREADSHEET_ID_DEFAULT =
+  (import.meta.env?.VITE_SPREADSHEET_ID as string) ||
+  '1tyYyUpBnbv7OtHuEbG7qf4pn0mCnjzDG-sSgZ99H8F4';
 export const DEFAULT_GAS_URL =
+  (import.meta.env?.VITE_GAS_URL as string) ||
   'https://script.google.com/macros/s/AKfycbyTvyHhydD5LII2U7L1T2ZEgY6MEMQfWiPzkk1ffuymBeBRhIoan_coYTocrK1Rq7HY/exec';
 export const STORAGE_KEY_APP_STATE = 'gabsi_batu_finance_state_v2';
 export const STORAGE_KEY_AUTH_USER = 'gabsi_batu_auth_user_v2';
