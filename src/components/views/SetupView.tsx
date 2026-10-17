@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Sliders, Plus, Trash2, Sparkles, Check } from 'lucide-react';
+import { Sliders, Plus, Trash2, Sparkles, Check, RotateCcw, AlertTriangle } from 'lucide-react';
 import { AppState, UserRolePermission } from '../../types';
 
 interface SetupViewProps {
   state: AppState;
   currentRole: UserRolePermission | undefined;
   onUpdateCategories: (categories: { income: string[]; expense: string[] }) => void;
+  onPurgeDummyData?: () => void;
 }
 
 const REF_INCOME = [
@@ -32,6 +33,7 @@ export const SetupView: React.FC<SetupViewProps> = ({
   state,
   currentRole,
   onUpdateCategories,
+  onPurgeDummyData,
 }) => {
   const [newIncome, setNewIncome] = useState('');
   const [newExpense, setNewExpense] = useState('');
@@ -219,6 +221,31 @@ export const SetupView: React.FC<SetupViewProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Pembersihan Data Pengembangan (Clean Slate) */}
+      {onPurgeDummyData && (
+        <div className="p-5 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/80 shadow-sm space-y-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold text-amber-900 dark:text-amber-300 flex items-center gap-2">
+                <AlertTriangle size={16} className="text-amber-600 dark:text-amber-400" />
+                <span>Pembersihan Data Pengembangan (Clean Slate)</span>
+              </h3>
+              <p className="text-xs text-amber-800/80 dark:text-amber-400/80 max-w-2xl leading-relaxed">
+                Hapus seluruh transaksi dummy, hapus log aktivitas uji coba, dan reset saldo awal seluruh akun kas/bank kembali ke <strong>Rp 0</strong> untuk persiapan produksi atau deploy ke Vercel.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onPurgeDummyData}
+              className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs flex items-center gap-2 shadow-sm transition whitespace-nowrap"
+            >
+              <RotateCcw size={14} />
+              <span>Bersihkan Data Dummy (Reset ke 0)</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

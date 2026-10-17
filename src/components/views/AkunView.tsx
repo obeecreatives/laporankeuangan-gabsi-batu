@@ -12,9 +12,9 @@ interface AkunViewProps {
 }
 
 const REF_ACCOUNTS: { name: string; type: AccountType; initialBalance: number }[] = [
-  { name: 'Kas Tunai Bendahara', type: 'Kas', initialBalance: 1500000 },
-  { name: 'Rekening Bank Jatim Cabang Batu', type: 'Bank', initialBalance: 12500000 },
-  { name: 'Kas Digital / QRIS GABSI', type: 'E-Wallet', initialBalance: 500000 },
+  { name: 'Kas Tunai Bendahara', type: 'Kas', initialBalance: 0 },
+  { name: 'Rekening Bank Jatim Cabang Batu', type: 'Bank', initialBalance: 0 },
+  { name: 'Kas Digital / QRIS GABSI', type: 'E-Wallet', initialBalance: 0 },
 ];
 
 export const AkunView: React.FC<AkunViewProps> = ({

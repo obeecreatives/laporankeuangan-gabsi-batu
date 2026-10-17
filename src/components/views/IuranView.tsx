@@ -26,7 +26,7 @@ export const IuranView: React.FC<IuranViewProps> = ({
   const [targetMonth, setTargetMonth] = useState(curMonthNum);
   const [targetYear, setTargetYear] = useState(curYear);
   const [targetAccountId, setTargetAccountId] = useState(state.accounts[0]?.id || '');
-  const [amount, setAmount] = useState<number>(state.members[0]?.monthlyDues || 50000);
+  const [amount, setAmount] = useState<number | ''>(state.members[0]?.monthlyDues || '');
   const [paymentDate, setPaymentDate] = useState(now.toISOString().slice(0, 10));
 
   // Rekap table filter
@@ -107,11 +107,15 @@ export const IuranView: React.FC<IuranViewProps> = ({
                   required
                   className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 >
-                  {activeMembers.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.name} ({formatRupiah(m.monthlyDues)}/bln)
-                    </option>
-                  ))}
+                  {activeMembers.length === 0 ? (
+                    <option value="">-- Belum ada anggota terdaftar --</option>
+                  ) : (
+                    activeMembers.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.name} ({formatRupiah(m.monthlyDues)}/bln)
+                      </option>
+                    ))
+                  )}
                 </select>
               </div>
 

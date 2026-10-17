@@ -185,176 +185,27 @@ export function getInitialState(): AppState {
         id: 'acc_kas_tunai',
         name: 'Kas Tunai Bendahara',
         type: 'Kas',
-        initialBalance: 2500000,
+        initialBalance: 0,
       },
       {
         id: 'acc_bank_jatim',
         name: 'Rekening Bank Jatim GABSI',
         type: 'Bank',
-        initialBalance: 14750000,
+        initialBalance: 0,
       },
       {
         id: 'acc_ewallet_operasional',
         name: 'Kas Digital / QRIS',
         type: 'E-Wallet',
-        initialBalance: 1200000,
+        initialBalance: 0,
       },
     ],
-    members: [
-      {
-        id: 'mem_1',
-        name: 'Dr. Agus Santoso, Sp.A',
-        phone: '081234567890',
-        status: 'Aktif',
-        monthlyDues: 50000,
-      },
-      {
-        id: 'mem_2',
-        name: 'Ir. Hendra Kusuma',
-        phone: '081298765432',
-        status: 'Aktif',
-        monthlyDues: 50000,
-      },
-      {
-        id: 'mem_3',
-        name: 'Siti Rahmawati, S.Pd',
-        phone: '081333444555',
-        status: 'Aktif',
-        monthlyDues: 50000,
-      },
-      {
-        id: 'mem_4',
-        name: 'Bambang Sudibyo (Atlet Junior)',
-        phone: '085711223344',
-        status: 'Aktif',
-        monthlyDues: 25000,
-      },
-      {
-        id: 'mem_5',
-        name: 'Dewi Lestari (Nonaktif)',
-        phone: '085877889900',
-        status: 'Nonaktif',
-        monthlyDues: 50000,
-      },
-    ],
-    events: [
-      {
-        id: 'evt_walikota_2026',
-        name: 'Piala Wali Kota Batu Bridge Championship 2026',
-        date: '2026-11-20',
-        location: 'Hall Kusuma Agrowisata Batu',
-      },
-      {
-        id: 'evt_kejurprov_jatim',
-        name: 'Puslatcab Pra-Porprov Jatim 2026',
-        date: '2026-10-25',
-        location: 'GOR Ganesha Kota Batu',
-      },
-    ],
-    transactions: [
-      {
-        id: 'tx_01',
-        date: '2026-10-02',
-        type: 'income',
-        accountId: 'acc_bank_jatim',
-        category: 'Bantuan Hibah KONI Batu',
-        desc: 'Pencairan Dana Pembinaan Cabang Olahraga Tahap II',
-        amount: 10000000,
-        createdBy: 'bendahara@gabsibatu.org',
-        createdAt: '2026-10-02 09:30:00',
-      },
-      {
-        id: 'tx_02',
-        date: '2026-10-05',
-        type: 'income',
-        accountId: 'acc_kas_tunai',
-        category: 'Iuran Anggota',
-        desc: 'Iuran Oktober 2026 - Dr. Agus Santoso, Sp.A',
-        amount: 50000,
-        createdBy: 'bendahara@gabsibatu.org',
-        memberId: 'mem_1',
-        createdAt: '2026-10-05 14:15:00',
-      },
-      {
-        id: 'tx_03',
-        date: '2026-10-06',
-        type: 'income',
-        accountId: 'acc_kas_tunai',
-        category: 'Iuran Anggota',
-        desc: 'Iuran Oktober 2026 - Ir. Hendra Kusuma',
-        amount: 50000,
-        createdBy: 'bendahara@gabsibatu.org',
-        memberId: 'mem_2',
-        createdAt: '2026-10-06 10:00:00',
-      },
-      {
-        id: 'tx_04',
-        date: '2026-10-08',
-        type: 'expense',
-        accountId: 'acc_kas_tunai',
-        category: 'Peralatan Bridge (Kartu, Bidding Box)',
-        desc: 'Pembelian 10 Deck Kartu Bridge Plastik & 4 Bidding Box',
-        amount: 1450000,
-        createdBy: 'pengurus@gabsibatu.org',
-        createdAt: '2026-10-08 16:40:00',
-      },
-      {
-        id: 'tx_05',
-        date: '2026-10-10',
-        type: 'transfer',
-        accountId: 'acc_bank_jatim',
-        toAccountId: 'acc_kas_tunai',
-        category: '',
-        desc: 'Penarikan Kas Tunai dari Bank Jatim untuk Operasional Latihan',
-        amount: 2000000,
-        createdBy: 'bendahara@gabsibatu.org',
-        createdAt: '2026-10-10 11:15:00',
-      },
-      {
-        id: 'tx_06',
-        date: '2026-10-12',
-        type: 'expense',
-        accountId: 'acc_kas_tunai',
-        category: 'Sewa Tempat & GOR',
-        desc: 'Sewa Ruang Latihan Rutin Minggu 1 & 2 Oktober',
-        amount: 600000,
-        createdBy: 'admin@gabsibatu.org',
-        eventId: 'evt_kejurprov_jatim',
-        createdAt: '2026-10-12 18:20:00',
-      },
-      {
-        id: 'tx_07',
-        date: '2026-10-14',
-        type: 'income',
-        accountId: 'acc_bank_jatim',
-        category: 'Sponsorship',
-        desc: 'Sponsorship Banner Turnamen Piala Wali Kota - Bank Jatim',
-        amount: 3500000,
-        createdBy: 'bendahara@gabsibatu.org',
-        eventId: 'evt_walikota_2026',
-        createdAt: '2026-10-14 13:00:00',
-      },
-    ],
+    members: [],
+    events: [],
+    transactions: [],
     users: DEFAULT_USERS,
     roles: DEFAULT_ROLES,
-    activityLogs: [
-      {
-        id: 'act_init_1',
-        time: '2026-10-16 00:00:00',
-        email: 'loehendrasoftware@gmail.com',
-        entity: 'Pengguna',
-        action: 'Tambah',
-        desc: 'Inisialisasi sistem RBAC & migrasi database Google Sheets',
-      },
-      {
-        id: 'act_init_2',
-        time: '2026-10-16 00:01:00',
-        email: 'bendahara@gabsibatu.org',
-        entity: 'Akun',
-        action: 'Tambah',
-        desc: 'Sinkronisasi 3 akun kas/bank organisasi',
-      },
-    ],
+    activityLogs: [],
     txHistories: [],
   };
 }
@@ -405,13 +256,63 @@ export function loadLocalState(): AppState {
       }
     }
     if (!parsed.categories) parsed.categories = getInitialState().categories;
-    if (!parsed.accounts) parsed.accounts = getInitialState().accounts;
-    if (!parsed.members) parsed.members = getInitialState().members;
-    if (!parsed.events) parsed.events = getInitialState().events;
-    if (!parsed.transactions) parsed.transactions = getInitialState().transactions;
-    if (!parsed.activityLogs) parsed.activityLogs = [];
+
+    // Purge development dummy transactions (tx_01 to tx_07)
+    const dummyTxIds = new Set(['tx_01', 'tx_02', 'tx_03', 'tx_04', 'tx_05', 'tx_06', 'tx_07']);
+    if (Array.isArray(parsed.transactions)) {
+      parsed.transactions = parsed.transactions.filter(
+        (t: any) => !dummyTxIds.has(t.id)
+      );
+    } else {
+      parsed.transactions = [];
+    }
+
+    // Reset development dummy initial balances (e.g. 2500000, 14750000, 1200000)
+    const dummyBalances = new Set([2500000, 14750000, 1200000, 1500000, 12500000, 500000]);
+    if (Array.isArray(parsed.accounts)) {
+      parsed.accounts = parsed.accounts.map((a: any) => {
+        if (dummyBalances.has(Number(a.initialBalance))) {
+          return { ...a, initialBalance: 0 };
+        }
+        return a;
+      });
+    } else {
+      parsed.accounts = getInitialState().accounts;
+    }
+
+    // Clean development dummy members if they match dummy set
+    const dummyMemberIds = new Set(['mem_1', 'mem_2', 'mem_3', 'mem_4', 'mem_5']);
+    if (Array.isArray(parsed.members)) {
+      if (parsed.members.length > 0 && parsed.members.every((m: any) => dummyMemberIds.has(m.id))) {
+        parsed.members = [];
+      }
+    } else {
+      parsed.members = [];
+    }
+
+    // Clean development dummy events
+    const dummyEventIds = new Set(['evt_walikota_2026', 'evt_kejurprov_jatim']);
+    if (Array.isArray(parsed.events)) {
+      if (parsed.events.length > 0 && parsed.events.every((e: any) => dummyEventIds.has(e.id))) {
+        parsed.events = [];
+      }
+    } else {
+      parsed.events = [];
+    }
+
+    // Clean dummy activity logs
+    const dummyLogIds = new Set(['act_init_1', 'act_init_2']);
+    if (Array.isArray(parsed.activityLogs)) {
+      parsed.activityLogs = parsed.activityLogs.filter((l: any) => !dummyLogIds.has(l.id));
+    } else {
+      parsed.activityLogs = [];
+    }
+
     if (!parsed.txHistories) parsed.txHistories = [];
     if (!parsed.spreadsheetId) parsed.spreadsheetId = SPREADSHEET_ID_DEFAULT;
+
+    // Persist cleaned state back to localStorage
+    saveLocalState(parsed);
     return parsed;
   } catch (e) {
     console.error('Error loading state from localStorage:', e);

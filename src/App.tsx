@@ -497,6 +497,36 @@ export default function App() {
     triggerDebouncedPush();
   };
 
+  const handlePurgeDummyData = () => {
+    if (
+      !confirm(
+        'PERINGATAN: Apakah Anda yakin ingin membersihkan semua transaksi/angka dummy pengujian dan mengatur ulang saldo awal seluruh akun kas menjadi Rp 0?'
+      )
+    ) {
+      return;
+    }
+
+    updateStateAndPersist((prev) => ({
+      ...prev,
+      accounts: prev.accounts.map((a) => ({ ...a, initialBalance: 0 })),
+      transactions: [],
+      txHistories: [],
+      activityLogs: [
+        {
+          id: generateUid(),
+          time: new Date().toISOString(),
+          email: authUser?.email || 'system',
+          entity: 'Transaksi',
+          action: 'Hapus',
+          desc: 'Pembersihan total angka & transaksi dummy (seluruh saldo kas kembali Rp 0)',
+        },
+      ],
+    }));
+
+    alert('Berhasil! Seluruh transaksi dummy telah dibersihkan dan saldo awal semua akun kembali ke Rp 0.');
+    triggerDebouncedPush();
+  };
+
   const handleAddAccount = (acc: Account) => {
     updateStateAndPersist((prev) => ({ ...prev, accounts: [...prev.accounts, acc] }));
     addActivityLog('Akun', 'Tambah', `Akun kas baru: ${acc.name} (${acc.type})`);
@@ -676,6 +706,9 @@ export default function App() {
               state={appState}
               currentRole={currentRole}
               onUpdateCategories={handleUpdateCategories}
+              onPurgeDummyData={
+                currentRole?.permissions.canManageSetup ? handlePurgeDummyData : undefined
+              }
             />
           )}
 

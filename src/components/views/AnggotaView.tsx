@@ -22,7 +22,7 @@ export const AnggotaView: React.FC<AnggotaViewProps> = ({
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [status, setStatus] = useState<MemberStatus>('Aktif');
-  const [monthlyDues, setMonthlyDues] = useState<number | ''>(50000);
+  const [monthlyDues, setMonthlyDues] = useState<number | ''>('');
   const [search, setSearch] = useState('');
 
   const handleAddMember = (e: React.FormEvent) => {
@@ -42,7 +42,7 @@ export const AnggotaView: React.FC<AnggotaViewProps> = ({
     setName('');
     setPhone('');
     setStatus('Aktif');
-    setMonthlyDues(50000);
+    setMonthlyDues('');
   };
 
   const filteredMembers = state.members.filter((m) => {
