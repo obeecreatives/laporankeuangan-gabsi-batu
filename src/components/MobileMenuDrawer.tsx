@@ -168,6 +168,10 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
             <HelpCircle size={16} />
             <span>Bantuan & Panduan</span>
           </button>
+
+          <div className="pt-3 pb-1 text-[10px] text-slate-500 text-center leading-relaxed border-t border-slate-900/60 select-none">
+            obeecreatives Allright Reserved . Developed by Lalu Mahendra
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 export const PROJECT_NAME = 'GABSI Kota Batu';
 export const APP_SUBTITLE = 'Laporan Keuangan Bendahara - Bridge Kota Batu';
-export const APP_FOOTER_DEV = 'Laporan Keuangan Bendahara . Bridge Kota Batu . Developed by Lalu Mahendra/obeecreatives';
+export const APP_FOOTER_DEV = 'obeecreatives Allright Reserved . Developed by Lalu Mahendra';
 export const PDF_FOOTER_TEXT = 'Laporan Keuangan Bendahara - Bridge Kota Batu';
 
 export const MONTH_NAMES_ID = [

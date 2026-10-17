@@ -802,6 +802,13 @@ export default function App() {
           {activeTab === 'riwayat' && (
             <RiwayatView state={appState} currentRole={currentRole} />
           )}
+
+          {/* Application Footer */}
+          <footer className="mt-12 py-6 border-t border-slate-200/80 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400 select-none">
+            <p className="font-medium tracking-wide">
+              obeecreatives Allright Reserved . Developed by Lalu Mahendra
+            </p>
+          </footer>
         </main>
       </div>
 
