@@ -10,6 +10,7 @@ import {
   Layers,
   Sparkles,
   SlidersHorizontal,
+  DownloadCloud,
 } from 'lucide-react';
 import { UserRolePermission, UserAccount, ViewTab } from '../types';
 
@@ -29,6 +30,8 @@ interface HeaderProps {
   onOpenGasCenter: () => void;
   onLogout: () => void;
   onOpenMobileMenu: () => void;
+  isInstalled?: boolean;
+  onOpenInstall?: () => void;
 }
 
 const TAB_TITLES: Record<ViewTab, { title: string; subtitle: string }> = {
@@ -64,6 +67,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenGasCenter,
   onLogout,
   onOpenMobileMenu,
+  isInstalled = false,
+  onOpenInstall,
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
@@ -248,6 +253,18 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </button>
 
+          {/* 3b. Quick 1-Click Install Button in Header */}
+          {!isInstalled && onOpenInstall && (
+            <button
+              onClick={onOpenInstall}
+              title="Install Aplikasi GABSI Batu (1-Klik ke HP / Desktop)"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-semibold text-xs shadow-sm shadow-sky-600/20 transition"
+            >
+              <DownloadCloud size={13} className="text-white" />
+              <span className="hidden sm:inline">Install App</span>
+            </button>
+          )}
+
           {/* 4. Unified Profile & Quick Settings Dropdown (Contains Role Switcher & Toggles on Mobile!) */}
           <div className="relative" ref={menuRef}>
             <button
@@ -381,6 +398,19 @@ export const Header: React.FC<HeaderProps> = ({
                     <KeyRound size={15} className="text-slate-400" />
                     <span>Ganti PIN / Password</span>
                   </button>
+
+                  {onOpenInstall && (
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        onOpenInstall();
+                      }}
+                      className="w-full text-left px-3.5 py-2 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/30 flex items-center gap-2.5 transition font-medium"
+                    >
+                      <DownloadCloud size={15} />
+                      <span>{isInstalled ? 'Aplikasi Terpasang (PWA) ✓' : 'Install Aplikasi (1-Klik)'}</span>
+                    </button>
+                  )}
 
                   {canSwitchRole && (
                     <button

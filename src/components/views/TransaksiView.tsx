@@ -11,11 +11,11 @@ import {
   X,
   ArrowRightLeft,
   Calendar,
-  AlertCircle,
   FileSpreadsheet,
+  Printer,
 } from 'lucide-react';
 import { AppState, Transaction, TransactionType, UserRolePermission, TransactionHistory } from '../../types';
-import { formatRupiah, formatNumber, formatDateId, MONTH_NAMES_ID, generateUid, exportToCsvFile } from '../../utils/formatters';
+import { formatRupiah, formatNumber, formatDateId, MONTH_NAMES_ID, generateUid, exportToCsvFile, printSectionToPdf } from '../../utils/formatters';
 import { CurrencyAmountInput } from '../CurrencyAmountInput';
 
 interface TransaksiViewProps {
@@ -207,6 +207,79 @@ export const TransaksiView: React.FC<TransaksiViewProps> = ({
 
     const monthLabel = selectedMonth === 'all' ? 'Semua_Bulan' : MONTH_NAMES_ID[Number(selectedMonth) - 1];
     exportToCsvFile(`GABSI_Batu_Transaksi_${monthLabel}_${selectedYear}`, headers, rows);
+  };
+
+  const handleExportPdf = () => {
+    const monthLabel = selectedMonth === 'all' ? 'Semua Bulan' : MONTH_NAMES_ID[Number(selectedMonth) - 1];
+    const totalIncome = filteredTransactions
+      .filter((t) => t.type === 'income')
+      .reduce((s, t) => s + Number(t.amount || 0), 0);
+    const totalExpense = filteredTransactions
+      .filter((t) => t.type === 'expense')
+      .reduce((s, t) => s + Number(t.amount || 0), 0);
+    const net = totalIncome - totalExpense;
+
+    const content = `
+      <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 4px; color: #0f172a;">Buku Catatan Transaksi Kas</h3>
+        <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">Periode: ${monthLabel} ${selectedYear} (${formatNumber(filteredTransactions.length)} transaksi)</p>
+
+        <div style="display: flex; gap: 12px; margin-bottom: 16px; font-size: 11px;">
+          <div style="flex: 1; padding: 8px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;">
+            <div style="color: #166534; font-size: 10px;">Total Pemasukan:</div>
+            <div style="font-weight: bold; font-family: monospace; color: #15803d; font-size: 13px;">${formatRupiah(totalIncome)}</div>
+          </div>
+          <div style="flex: 1; padding: 8px 12px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px;">
+            <div style="color: #9f1239; font-size: 10px;">Total Pengeluaran:</div>
+            <div style="font-weight: bold; font-family: monospace; color: #be123c; font-size: 13px;">${formatRupiah(totalExpense)}</div>
+          </div>
+          <div style="flex: 1; padding: 8px 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;">
+            <div style="color: #475569; font-size: 10px;">Surplus / (Defisit):</div>
+            <div style="font-weight: bold; font-family: monospace; color: ${net >= 0 ? '#15803d' : '#be123c'}; font-size: 13px;">${formatRupiah(net)}</div>
+          </div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+          <thead>
+            <tr style="background: #f1f5f9; text-align: left; border-bottom: 2px solid #cbd5e1;">
+              <th style="padding: 8px 6px;">Tanggal</th>
+              <th style="padding: 8px 6px;">Jenis</th>
+              <th style="padding: 8px 6px;">Akun</th>
+              <th style="padding: 8px 6px;">Kategori</th>
+              <th style="padding: 8px 6px;">Deskripsi / Terkait</th>
+              <th style="padding: 8px 6px; text-align: right;">Nominal</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${
+              filteredTransactions.length === 0
+                ? '<tr><td colspan="6" style="padding: 16px; text-align: center; color: #94a3b8;">Tidak ada data transaksi.</td></tr>'
+                : filteredTransactions
+                    .map((t) => {
+                      const accName = accountMap.get(t.accountId) || '-';
+                      const toAccName = t.toAccountId ? accountMap.get(t.toAccountId) || '-' : '';
+                      const accDisplay = t.type === 'transfer' ? `${accName} → ${toAccName}` : accName;
+                      const typeLabel = t.type === 'income' ? 'Pemasukan' : t.type === 'expense' ? 'Pengeluaran' : 'Transfer';
+                      const typeColor = t.type === 'income' ? '#15803d' : t.type === 'expense' ? '#be123c' : '#4338ca';
+                      return `
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                          <td style="padding: 6px; font-family: monospace;">${formatDateId(t.date)}</td>
+                          <td style="padding: 6px; color: ${typeColor}; font-weight: 600;">${typeLabel}</td>
+                          <td style="padding: 6px;">${accDisplay}</td>
+                          <td style="padding: 6px;">${t.category || '-'}</td>
+                          <td style="padding: 6px;">${t.desc || '-'}</td>
+                          <td style="padding: 6px; text-align: right; font-family: monospace; font-weight: bold;">${formatRupiah(t.amount)}</td>
+                        </tr>
+                      `;
+                    })
+                    .join('')
+            }
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    printSectionToPdf(`Buku Transaksi ${monthLabel} ${selectedYear}`, `Periode ${monthLabel} ${selectedYear}`, content);
   };
 
   const accountMap = new Map(state.accounts.map((a) => [a.id, a.name]));
@@ -479,16 +552,27 @@ export const TransaksiView: React.FC<TransaksiViewProps> = ({
             </div>
           </div>
 
-          {/* Export Button */}
+          {/* Export Buttons: CSV & PDF */}
           {permissions?.canExportReports && (
-            <button
-              onClick={handleExportCsv}
-              className="px-3 py-1.5 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 font-semibold text-xs flex items-center justify-center gap-1.5 transition"
-              title="Unduh data transaksi ke format CSV / Excel"
-            >
-              <FileSpreadsheet size={14} />
-              <span>Export CSV / Excel</span>
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={handleExportCsv}
+                className="px-3 py-1.5 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 font-semibold text-xs flex items-center justify-center gap-1.5 transition"
+                title="Unduh data transaksi ke format CSV / Excel"
+              >
+                <FileSpreadsheet size={14} />
+                <span>Export CSV</span>
+              </button>
+
+              <button
+                onClick={handleExportPdf}
+                className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition"
+                title="Cetak & Export Laporan Transaksi Resmi ke format PDF"
+              >
+                <Printer size={14} />
+                <span>Export PDF</span>
+              </button>
+            </div>
           )}
         </div>
 

@@ -3,7 +3,22 @@
 @variant dark (&:where(.dark, .dark *));
 
 @media print {
+  body > #root > div:first-child {
+    display: none !important;
+  }
+
   body {
+    background: white !important;
+    color: black !important;
+    font-family: system-ui, -apple-system, sans-serif !important;
+  }
+
+  #print-area-hidden {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
     background: white !important;
     color: black !important;
   }

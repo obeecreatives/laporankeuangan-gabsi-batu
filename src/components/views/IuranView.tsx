@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Sparkles, CheckCircle2, Clock, Calendar, User, Wallet, ArrowRight, AlertCircle } from 'lucide-react';
+import { Sparkles, CheckCircle2, Clock, Calendar, User, Wallet, ArrowRight, AlertCircle, Printer } from 'lucide-react';
 import { AppState, UserRolePermission, Transaction } from '../../types';
-import { formatRupiah, formatNumber, formatDateId, MONTH_NAMES_ID, generateUid } from '../../utils/formatters';
+import { formatRupiah, formatNumber, formatDateId, MONTH_NAMES_ID, generateUid, printSectionToPdf } from '../../utils/formatters';
 import { CurrencyAmountInput } from '../CurrencyAmountInput';
 
 interface IuranViewProps {
@@ -35,6 +35,22 @@ export const IuranView: React.FC<IuranViewProps> = ({
   const [rekapYear, setRekapYear] = useState(curYear);
 
   const activeMembers = state.members.filter((m) => m.status === 'Aktif');
+
+  const rekapList = activeMembers.map((m) => {
+    const duesTx = state.transactions.find(
+      (t) =>
+        t.type === 'income' &&
+        t.memberId === m.id &&
+        t.category.toLowerCase().includes('iuran') &&
+        t.date.slice(0, 4) === rekapYear &&
+        t.date.slice(5, 7) === rekapMonth
+    );
+    return {
+      member: m,
+      paidTx: duesTx,
+      paid: !!duesTx,
+    };
+  });
 
   const handleMemberChange = (memId: string) => {
     setSelectedMemberId(memId);
@@ -82,6 +98,63 @@ export const IuranView: React.FC<IuranViewProps> = ({
 
     onRecordDues(tx);
     alert(`Pembayaran iuran ${mem.name} untuk bulan ${monthLabel} ${targetYear} berhasil dicatat!`);
+  };
+
+  const handleExportPdf = () => {
+    const monthLabel = MONTH_NAMES_ID[Number(rekapMonth) - 1];
+    const paidCount = rekapList.filter((item) => item.paid).length;
+    const totalDuesCollected = rekapList
+      .filter((item) => item.paid)
+      .reduce((sum, item) => sum + (item.paidTx?.amount || item.member.monthlyDues), 0);
+
+    const content = `
+      <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 4px; color: #0f172a;">Laporan Pelunasan Iuran Wajib Anggota</h3>
+        <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">Periode: ${monthLabel} ${rekapYear}</p>
+
+        <div style="display: flex; gap: 12px; margin-bottom: 16px; font-size: 11px;">
+          <div style="flex: 1; padding: 8px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;">
+            <div style="color: #166534; font-size: 10px;">Status Pelunasan:</div>
+            <div style="font-weight: bold; font-family: monospace; color: #15803d; font-size: 13px;">${formatNumber(paidCount)} / ${formatNumber(rekapList.length)} Anggota (${rekapList.length ? Math.round((paidCount / rekapList.length) * 100) : 0}%)</div>
+          </div>
+          <div style="flex: 1; padding: 8px 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;">
+            <div style="color: #475569; font-size: 10px;">Total Iuran Terkumpul:</div>
+            <div style="font-weight: bold; font-family: monospace; color: #0284c7; font-size: 13px;">${formatRupiah(totalDuesCollected)}</div>
+          </div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+          <thead>
+            <tr style="background: #f1f5f9; text-align: left; border-bottom: 2px solid #cbd5e1;">
+              <th style="padding: 8px 6px;">No</th>
+              <th style="padding: 8px 6px;">Nama Anggota</th>
+              <th style="padding: 8px 6px;">No. HP</th>
+              <th style="padding: 8px 6px; text-align: right;">Tarif Iuran</th>
+              <th style="padding: 8px 6px; text-align: center;">Status</th>
+              <th style="padding: 8px 6px; text-align: right;">Tgl Bayar</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rekapList
+              .map(
+                (item, idx) => `
+              <tr style="border-bottom: 1px solid #e2e8f0;">
+                <td style="padding: 6px;">${idx + 1}</td>
+                <td style="padding: 6px; font-weight: 600;">${item.member.name}</td>
+                <td style="padding: 6px; font-family: monospace;">${item.member.phone || '-'}</td>
+                <td style="padding: 6px; text-align: right; font-family: monospace;">${formatRupiah(item.member.monthlyDues)}</td>
+                <td style="padding: 6px; text-align: center; font-weight: bold; color: ${item.paid ? '#15803d' : '#be123c'};">${item.paid ? 'LUNAS' : 'BELUM'}</td>
+                <td style="padding: 6px; text-align: right; font-family: monospace;">${item.paidTx ? formatDateId(item.paidTx.date) : '-'}</td>
+              </tr>
+            `
+              )
+              .join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    printSectionToPdf(`Rekap Iuran ${monthLabel} ${rekapYear}`, `Periode ${monthLabel} ${rekapYear}`, content);
   };
 
   return (
@@ -218,7 +291,7 @@ export const IuranView: React.FC<IuranViewProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex flex-wrap items-center gap-2 text-xs">
             <select
               value={rekapMonth}
               onChange={(e) => setRekapMonth(e.target.value)}
@@ -236,6 +309,16 @@ export const IuranView: React.FC<IuranViewProps> = ({
               onChange={(e) => setRekapYear(e.target.value)}
               className="w-20 px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white font-mono font-semibold"
             />
+            {permissions?.canExportReports && (
+              <button
+                onClick={handleExportPdf}
+                className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold flex items-center gap-1.5 shadow-sm transition"
+                title="Cetak & Export Rekap Iuran ke format PDF"
+              >
+                <Printer size={13} />
+                <span>Export PDF</span>
+              </button>
+            )}
           </div>
         </div>
 

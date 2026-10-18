@@ -21,6 +21,7 @@ import {
   ChevronRight,
   Sparkles,
   DownloadCloud,
+  CheckCircle,
 } from 'lucide-react';
 import { ViewTab, UserRolePermission, UserAccount } from '../types';
 import { APP_FOOTER_DEV } from '../utils/formatters';
@@ -32,6 +33,7 @@ interface SidebarProps {
   currentRole: UserRolePermission | undefined;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
+  isInstalled?: boolean;
   onOpenGasCenter: () => void;
   onOpenHelp: () => void;
   onOpenInstall: () => void;
@@ -46,6 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   currentRole,
   isCollapsed,
   onToggleCollapse,
+  isInstalled = false,
   onOpenGasCenter,
   onOpenHelp,
   onOpenInstall,
@@ -269,14 +272,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Install Web App Button */}
         <button
           onClick={onOpenInstall}
-          title="Install Web App ke PC / HP"
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-sky-400 hover:bg-sky-950/30 transition group relative"
+          title={isInstalled ? 'Aplikasi Terpasang (PWA Mandiri Aktif)' : 'Install Web App (Langsung ke Desktop / HP)'}
+          className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition group relative ${
+            isInstalled
+              ? 'text-emerald-400 hover:bg-emerald-950/30'
+              : 'text-sky-400 hover:bg-sky-950/30 bg-sky-950/10'
+          }`}
         >
-          <DownloadCloud size={17} className="flex-shrink-0" />
-          {!isCollapsed && <span className="truncate">Install Web App</span>}
+          {isInstalled ? (
+            <CheckCircle size={17} className="flex-shrink-0 text-emerald-400" />
+          ) : (
+            <DownloadCloud size={17} className="flex-shrink-0 text-sky-400" />
+          )}
+          {!isCollapsed && (
+            <span className="truncate">
+              {isInstalled ? 'Aplikasi Terpasang' : 'Install Aplikasi'}
+            </span>
+          )}
           {isCollapsed && (
             <div className="absolute left-full ml-2 px-2.5 py-1 bg-slate-800 text-sky-300 text-xs rounded-lg shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 transition whitespace-nowrap z-50">
-              Install Web App
+              {isInstalled ? 'Aplikasi Terpasang (PWA)' : 'Install Aplikasi'}
             </div>
           )}
         </button>

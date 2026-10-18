@@ -42,8 +42,10 @@ import { GasCenterModal } from './components/GasCenterModal';
 import { RoleSettingsModal } from './components/RoleSettingsModal';
 import { ChangePinModal } from './components/ChangePinModal';
 import { InstallModal } from './components/InstallModal';
+import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { LoginView } from './components/views/LoginView';
 import { BantuanModal } from './components/views/BantuanModal';
+import { usePWAInstall } from './hooks/usePWAInstall';
 
 // Views
 import { BerandaView } from './components/views/BerandaView';
@@ -86,22 +88,29 @@ export default function App() {
   const [isInstallOpen, setIsInstallOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<any>(null);
+  // PWA install state and direct trigger
+  const { isInstallable, isInstalled, isIOS, deferredPrompt, install } = usePWAInstall();
+
+  const handleDirectInstall = useCallback(async () => {
+    if (deferredPrompt) {
+      try {
+        const res = await install();
+        if (res.success) {
+          setIsInstallOpen(false);
+          return;
+        }
+      } catch (err) {
+        console.warn('Install failed', err);
+      }
+    }
+    // If not promptable yet, show guide modal
+    setIsInstallOpen(true);
+  }, [deferredPrompt, install]);
 
   // Apply initial theme
   useEffect(() => {
     saveThemeMode(themeMode);
   }, [themeMode]);
-
-  // PWA beforeinstallprompt handler
-  useEffect(() => {
-    const handleBeforeInstall = (e: Event) => {
-      e.preventDefault();
-      setDeferredInstallPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
-  }, []);
 
   // Save state on change
   const updateStateAndPersist = useCallback((updater: (prev: AppState) => AppState) => {
@@ -664,7 +673,8 @@ export default function App() {
         onToggleCollapse={handleToggleSidebar}
         onOpenGasCenter={() => setIsGasCenterOpen(true)}
         onOpenHelp={() => setIsHelpOpen(true)}
-        onOpenInstall={() => setIsInstallOpen(true)}
+        isInstalled={isInstalled}
+        onOpenInstall={handleDirectInstall}
         isFullscreen={isFullscreen}
         onToggleFullscreen={handleToggleFullscreen}
       />
@@ -688,6 +698,8 @@ export default function App() {
           onOpenGasCenter={() => setIsGasCenterOpen(true)}
           onLogout={handleLogout}
           onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+          isInstalled={isInstalled}
+          onOpenInstall={handleDirectInstall}
         />
 
         {/* Dynamic View Body */}
@@ -827,8 +839,9 @@ export default function App() {
         onSelectTab={setActiveTab}
         currentUser={authUser}
         currentRole={currentRole}
+        isInstalled={isInstalled}
         onOpenGasCenter={() => setIsGasCenterOpen(true)}
-        onOpenInstall={() => setIsInstallOpen(true)}
+        onOpenInstall={handleDirectInstall}
         onOpenHelp={() => setIsHelpOpen(true)}
       />
 
@@ -864,21 +877,22 @@ export default function App() {
       <InstallModal
         isOpen={isInstallOpen}
         onClose={() => setIsInstallOpen(false)}
-        deferredPrompt={deferredInstallPrompt}
-        onTriggerInstall={() => {
-          if (deferredInstallPrompt) {
-            deferredInstallPrompt.prompt();
-            deferredInstallPrompt.userChoice.then(() => {
-              setDeferredInstallPrompt(null);
-              setIsInstallOpen(false);
-            });
-          }
-        }}
+        isInstallable={isInstallable}
+        isInstalled={isInstalled}
+        isIOS={isIOS}
+        deferredPrompt={deferredPrompt}
+        onTriggerInstall={handleDirectInstall}
       />
 
       <BantuanModal
         isOpen={isHelpOpen}
         onClose={() => setIsHelpOpen(false)}
+      />
+
+      {/* 6. Floating 1-Click Install Banner for mobile / desktop browsers */}
+      <PWAInstallBanner
+        isInstalled={isInstalled}
+        onInstall={handleDirectInstall}
       />
 
       {/* Hidden print container for official PDF export */}

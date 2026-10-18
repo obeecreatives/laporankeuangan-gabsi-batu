@@ -18,6 +18,7 @@ import {
   Server,
   DownloadCloud,
   HelpCircle,
+  CheckCircle,
 } from 'lucide-react';
 import { ViewTab, UserRolePermission, UserAccount } from '../types';
 
@@ -28,6 +29,7 @@ interface MobileMenuDrawerProps {
   onSelectTab: (tab: ViewTab) => void;
   currentUser: UserAccount | null;
   currentRole: UserRolePermission | undefined;
+  isInstalled?: boolean;
   onOpenGasCenter: () => void;
   onOpenInstall: () => void;
   onOpenHelp: () => void;
@@ -40,6 +42,7 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
   onSelectTab,
   currentUser,
   currentRole,
+  isInstalled = false,
   onOpenGasCenter,
   onOpenInstall,
   onOpenHelp,
@@ -152,10 +155,12 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
               onClose();
               onOpenInstall();
             }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sky-400 hover:bg-slate-800 font-medium text-[14px] transition"
+            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-[14px] transition ${
+              isInstalled ? 'text-emerald-400 hover:bg-slate-800' : 'text-sky-400 hover:bg-slate-800'
+            }`}
           >
-            <DownloadCloud size={18} />
-            <span>Install Web App</span>
+            {isInstalled ? <CheckCircle size={18} className="text-emerald-400" /> : <DownloadCloud size={18} />}
+            <span>{isInstalled ? 'Aplikasi Terpasang ✓' : 'Install Aplikasi (1-Klik)'}</span>
           </button>
 
           <button
